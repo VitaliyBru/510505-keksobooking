@@ -11,7 +11,7 @@ var TYPE_IN_RUSSIAN = {
   bungalo: 'лачуга'
 };
 
-var Announcementment = function () {
+var Announcement = function () {
   this.author = {
     avatar: ''
   };
@@ -149,7 +149,7 @@ var getRandomIn = function (min, max) {
 
 // Заполняет структуру данных эмулированными данными пользователя
 var getAnnouncement = function (dataList, index) {
-  var announcement = new Announcementment();
+  var announcement = new Announcement();
   announcement.author.avatar = 'img/avatars/user0' + (index + 1) + '.png';
   announcement.offer.title = dataList.getUniqueTitle();
   announcement.location.x = dataList.getLocationX();
@@ -167,8 +167,9 @@ var getAnnouncement = function (dataList, index) {
   return announcement;
 };
 
-var makePin = function (pinTemplate, announcement) {
-  var pinElement = pinTemplate.cloneNode(true);
+// Функция возвращает созданный элемент «pin»
+var makePin = function (templatePin, announcement) {
+  var pinElement = templatePin.cloneNode(true);
   var pinImgElement = pinElement.querySelector('img');
   pinImgElement.setAttribute('src', announcement.author.avatar);
   pinImgElement.setAttribute('alt', announcement.offer.title);
@@ -180,34 +181,34 @@ var makePin = function (pinTemplate, announcement) {
 
 // Функция возвращает копию шаблона и заполняет ее
 // данными от польльзователя
-var fillInCard = function (cardTemplate, announcement) {
-  var cardAnnouncement = cardTemplate.cloneNode(true);
+var fillInCard = function (templateCard, announcement) {
+  var announcementCard = templateCard.cloneNode(true);
   // аватар пользователя в img .popup__avatar
-  cardAnnouncement.querySelector('.popup__avatar')
+  announcementCard.querySelector('.popup__avatar')
       .setAttribute('src', announcement.author.avatar);
   // Заголовок в .popup__title
-  cardAnnouncement.querySelector('.popup__title')
+  announcementCard.querySelector('.popup__title')
       .textContent = announcement.offer.title;
   // Адрес в .popup__text--address
-  cardAnnouncement.querySelector('.popup__text--address')
+  announcementCard.querySelector('.popup__text--address')
       .textContent = announcement.offer.address;
   // Цена в .popup__text--price
-  cardAnnouncement.querySelector('.popup__text--price')
+  announcementCard.querySelector('.popup__text--price')
       .innerHTML = parseInt(announcement.offer.price, 10)
   + '&#x20bd;<span>/ночь</span>';
   // Тип жилья in .popup__type
-  cardAnnouncement.querySelector('.popup__type')
+  announcementCard.querySelector('.popup__type')
       .textContent = TYPE_IN_RUSSIAN[announcement.offer.type];
   // Кол-во комнат для кол-ва гостей .popup__text--capacity
-  cardAnnouncement.querySelector('.popup__text--capacity')
+  announcementCard.querySelector('.popup__text--capacity')
       .textContent = announcement.offer.rooms + ' комнат для '
   + announcement.offer.guests + ' гостей';
   // Время заезда и выезда в .popup__text--time
-  cardAnnouncement.querySelector('.popup__text--time')
+  announcementCard.querySelector('.popup__text--time')
       .textContent = 'Заезд после ' + announcement.offer.checkin + ', выезд до '
   + announcement.offer.checkout;
   // Удобства в список li .popup__feature
-  var listContainer = cardAnnouncement.querySelector('.popup__features');
+  var listContainer = announcementCard.querySelector('.popup__features');
   listContainer.innerHTML = '';
   for (var i = 0; i < announcement.offer.features.length; i++) {
     var listElement = document.createElement('li');
@@ -217,10 +218,10 @@ var fillInCard = function (cardTemplate, announcement) {
     listContainer.appendChild(listElement);
   }
   // Описание в .popup__description
-  var description = cardAnnouncement.querySelector('.popup__description');
+  var description = announcementCard.querySelector('.popup__description');
   description.textContent = announcement.offer.description;
   // Фотографии жилья в img .popup__photo
-  var imagesContainer = cardAnnouncement.querySelector('.popup__photos');
+  var imagesContainer = announcementCard.querySelector('.popup__photos');
   var imageTemplate = imagesContainer.querySelector('.popup__photo');
   imagesContainer.innerHTML = '';
   // i без var по настоянию тревиса
@@ -229,7 +230,7 @@ var fillInCard = function (cardTemplate, announcement) {
     image.setAttribute('src', announcement.offer.photos[i]);
     imagesContainer.appendChild(image);
   }
-  return cardAnnouncement;
+  return announcementCard;
 };
 
 // Эмулируем массив обьявлений пользователей
@@ -247,9 +248,9 @@ var pinTemplate = template.querySelector('.map__pin');
 var pinFragment = document.createDocumentFragment();
 // i без var по настоянию тревиса
 for (i = 0; i < bills.length; i++) {
-  var pinElement = makePin(pinTemplate, bills[i]);
+  var pin = makePin(pinTemplate, bills[i]);
   // добавить во фрагмент
-  pinFragment.appendChild(pinElement);
+  pinFragment.appendChild(pin);
 }
 // получить блок .map__pins
 var mapPinsBlock = document.querySelector('.map__pins');
