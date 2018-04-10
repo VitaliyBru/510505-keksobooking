@@ -148,7 +148,8 @@ var getRandomIn = function (min, max) {
 };
 
 // Заполняет структуру данных эмулированными данными пользователя
-var fillInAnnouncement = function (announcement, dataList, index) {
+var getAnnouncement = function (dataList, index) {
+  var announcement = new Announcementment();
   announcement.author.avatar = 'img/avatars/user0' + (index + 1) + '.png';
   announcement.offer.title = dataList.getUniqueTitle();
   announcement.location.x = dataList.getLocationX();
@@ -163,6 +164,7 @@ var fillInAnnouncement = function (announcement, dataList, index) {
   announcement.offer.checkout = dataList.getCheckInOut();
   announcement.offer.features = dataList.getFeatures();
   announcement.offer.photos = dataList.getPhotos();
+  return announcement;
 };
 
 var makePin = function (pinTemplate, announcement) {
@@ -233,8 +235,7 @@ var fillInCard = function (cardTemplate, announcement) {
 // Эмулируем массив обьявлений пользователей
 var bills = [];
 for (var i = 0; i < 8; i++) {
-  bills[i] = new Announcementment();
-  fillInAnnouncement(bills[i], announcementDataGenerator, i);
+  bills[i] = getAnnouncement(announcementDataGenerator, i);
 }
 
 document.querySelector('.map').classList.remove('map--faded');
