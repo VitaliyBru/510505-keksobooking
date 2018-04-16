@@ -4,6 +4,10 @@ var PIN_DIMENSIONS = {
   height: 70,
   width: 50
 };
+var MAIN_PIN_DIMENSIONS = {
+  height: 80,
+  width: 64
+};
 var TYPE_IN_RUSSIAN = {
   palace: 'дворец',
   flat: 'квартира',
@@ -230,7 +234,69 @@ var fillInCard = function (templateCard, announcement) {
     image.setAttribute('src', announcement.offer.photos[i]);
     imagesContainer.appendChild(image);
   }
+  announcementCard.querySelector('.popup__close')
+      .addEventListener('click',
+          function () {
+            mapContainer.removeChild(
+                mapContainer.querySelector('.map__card.popup')
+            );
+          }
+      );
   return announcementCard;
+};
+// Функция добавляет пины в ДОМ
+var drawPinsOnMap = function () {
+  for (var i = 0; i < bills.length; i++) {
+    var pin = makePin(pinTemplate, bills[i]);
+    pin.dataset.announcement = i;
+    // Наполняем фрагмент пинами
+    pinFragment.appendChild(pin);
+  }
+  // вставить фрагмент в .map__pins
+  document.querySelector('.map__pins').appendChild(pinFragment);
+};
+var onMainPinFirstMouseup = function () {
+  drawPinsOnMap();
+  mapContainer.classList.remove('map--faded');
+  document.querySelector('.ad-form').classList.remove('ad-form--disabled');
+  mainPin.removeEventListener('mouseup', onMainPinFirstMouseup);
+  inputAddress.value = getNailPinPosition(mainPin.style);
+};
+// Возвращает координаты острия пина
+var getNailPinPosition = function (style) {
+  return (parseInt(style.left, 10) + MAIN_PIN_DIMENSIONS.width / 2) + ', '
+      + (parseInt(style.top, 10) + MAIN_PIN_DIMENSIONS.height);
+};
+// Функция отображает подробности объявления
+var showAnnouncementDitails = function (announcement) {
+  var cardAnnouncement = fillInCard(cardTemplate, announcement);
+  // вставляем блок обьявления перед блоком .map__filters-container
+  // или замещаем анологичный если таковой имеется
+  var popup = mapContainer.querySelector('.map__card.popup');
+  if (popup) {
+    mapContainer.replaceChild(cardAnnouncement, popup);
+  } else {
+    mapContainer.insertBefore(
+        cardAnnouncement,
+        document.querySelector('.map__filters-container')
+    );
+  }
+};
+var onPinClick = function (evt) {
+  var pin = getPinElement(evt.target);
+  if (pin) {
+    showAnnouncementDitails(bills[pin.dataset.announcement]);
+  }
+};
+// Функция возвращает пин или null если пин не найден
+var getPinElement = function (element) {
+  var pinElement = null;
+  if (element.className === 'map__pin') {
+    pinElement = element;
+  } else if (element.parentElement.className === 'map__pin') {
+    pinElement = element.parentElement;
+  }
+  return pinElement;
 };
 
 // Эмулируем массив обьявлений пользователей
@@ -239,33 +305,21 @@ for (var i = 0; i < 8; i++) {
   bills[i] = getAnnouncement(announcementDataGenerator, i);
 }
 
-document.querySelector('.map').classList.remove('map--faded');
+// получаем блок мэп
+var mapContainer = document.querySelector('.map');
 // Получаем шаблон из верстки
 var template = document.querySelector('template').content;
 // получить темплайт пина
 var pinTemplate = template.querySelector('.map__pin');
-// клонировать и заполнить данными (title, avatar, location)
+// Создаем фрагмент
 var pinFragment = document.createDocumentFragment();
-// i без var по настоянию тревиса
-for (i = 0; i < bills.length; i++) {
-  var pin = makePin(pinTemplate, bills[i]);
-  // добавить во фрагмент
-  pinFragment.appendChild(pin);
-}
-// получить блок .map__pins
-var mapPinsBlock = document.querySelector('.map__pins');
-// вставить фрагмент с пинами в .map__pins
-mapPinsBlock.appendChild(pinFragment);
+// Поле ввода адреса
+var inputAddress = document.querySelector('#address');
+// Получаем пин польлзователя .map__pin--main
+var mainPin = mapContainer.querySelector('.map__pin--main');
+mainPin.addEventListener('mouseup', onMainPinFirstMouseup);
+
 
 // Шаблон карточки
 var cardTemplate = template.querySelector('.map__card');
-// Заполняем обьявление данными от пользователя
-// из первого обьявления bills[0]
-var cardAnnouncement = fillInCard(cardTemplate, bills[0]);
-// получаем блок мэп
-var mapContainer = document.querySelector('.map');
-// вставляем блок обьявления перед блоком .map__filters-container
-mapContainer.insertBefore(
-    cardAnnouncement,
-    document.querySelector('.map__filters-container')
-);
+mapContainer.querySelector('.map__pins').addEventListener('click', onPinClick);
