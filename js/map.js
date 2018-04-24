@@ -276,10 +276,7 @@ var showAnnouncementDitails = function (announcement) {
   if (popup) {
     mapContainer.replaceChild(cardAnnouncement, popup);
   } else {
-    mapContainer.insertBefore(
-        cardAnnouncement,
-        document.querySelector('.map__filters-container')
-    );
+    mapContainer.insertBefore(cardAnnouncement, mapFiltersContainer);
     document.addEventListener('keydown', onEscKeydown);
   }
 };
@@ -437,6 +434,8 @@ mainPin.addEventListener('mouseup', onMainPinFirstMouseup);
 
 // Шаблон карточки
 var cardTemplate = template.querySelector('.map__card');
+// Элемент перед которым вставляется элемент card
+var mapFiltersContainer = document.querySelector('.map__filters-container');
 // Слушатель для показа подробностей обьявления
 pinAssets.container.addEventListener('click', onPinClick);
 
