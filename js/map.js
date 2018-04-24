@@ -305,7 +305,7 @@ var onPopupCloseButtonClick = function () {
 };
 // Закрывает окно с подробностями обьявления по нажатию на клавишу escape
 var onEscKeydown = function (evt) {
-  if (evt.keyCode === ESC_KEYCODE){
+  if (evt.keyCode === ESC_KEYCODE) {
     onPopupCloseButtonClick();
   }
 };
