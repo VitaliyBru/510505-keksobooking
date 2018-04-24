@@ -21,6 +21,12 @@ var typeInRussian = {
   house: 'дом',
   bungalo: 'лачуга'
 };
+var minRentPrice = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
+};
 
 var Announcement = function () {
   this.author = {
@@ -352,23 +358,8 @@ var setSelectOptions = function (option) {
 };
 // Функция выставляет нижнюю границу цены аренди от типа строения
 var onTypeSelectInput = function (evt) {
-  switch (evt.target.value) {
-    case 'flat':
-      inputRentPrice.min = 1000;
-      inputRentPrice.placeholder = 1000;
-      break;
-    case 'house':
-      inputRentPrice.min = 5000;
-      inputRentPrice.placeholder = 5000;
-      break;
-    case 'palace':
-      inputRentPrice.min = 10000;
-      inputRentPrice.placeholder = 10000;
-      break;
-    default:
-      inputRentPrice.min = 0;
-      inputRentPrice.placeholder = 0;
-  }
+  inputRentPrice.min = minRentPrice[evt.target.value];
+  inputRentPrice.placeholder = minRentPrice[evt.target.value];
 };
 // Функция описывает действия по клику на кнопку reset в форме
 var onResetButtonClick = function () {
@@ -441,7 +432,7 @@ pinAssets.container.addEventListener('click', onPinClick);
 // Будем использовать эвент для первичной синхронизации полей
 var inputEvt = new Event('input');
 
-// ТЗ 1.7 функционал для кнопки reset (line 263)
+// ТЗ 1.7 функционал для кнопки reset (line 269)
 var buttonReset = formAdForm.querySelector('.ad-form__reset');
 
 // ТЗ пункт 2.3 «Тип жилья» определяет минимальное значение поля «Цена за ночь»
