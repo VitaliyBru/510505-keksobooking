@@ -180,7 +180,7 @@ var getAnnouncement = function (dataList, index) {
 
 // Функция добавляет созданный элемент «pin» во фрагмент
 var makePin = function (announcement, index) {
-  var pinElement = this.template.cloneNode(true);
+  var pinElement = pinAssets.template.cloneNode(true);
   pinElement.dataset.announcement = index;
   var pinImgElement = pinElement.querySelector('img');
   pinImgElement.src = announcement.author.avatar;
@@ -190,7 +190,7 @@ var makePin = function (announcement, index) {
       (announcement.location.x - PIN_DIMENSIONS.width / 2) + 'px';
   pinElement.style.top =
       (announcement.location.y - PIN_DIMENSIONS.height) + 'px';
-  this.fragment.appendChild(pinElement);
+  pinAssets.fragment.appendChild(pinElement);
 };
 
 // Функция возвращает копию шаблона и заполняет ее
@@ -250,7 +250,7 @@ var fillInCard = function (templateCard, announcement) {
 };
 // Функция добавляет пины в ДОМ
 var drawPinsOnMap = function () {
-  bills.forEach(makePin, pinAssets);
+  bills.forEach(makePin);
   // вставить фрагмент в .map__pins
   pinAssets.container.appendChild(pinAssets.fragment);
 };
@@ -319,9 +319,9 @@ var onPinClick = function (evt) {
 // Функция возвращает пин или null если пин не найден
 var getPinElement = function (element) {
   var pinElement = null;
-  if (element.dataset.announcement != null) {
+  if (element.dataset.announcement > -1) {
     pinElement = element;
-  } else if (element.parentElement.dataset.announcement != null) {
+  } else if (element.parentElement.dataset.announcement > -1) {
     pinElement = element.parentElement;
   }
   return pinElement;
@@ -336,10 +336,9 @@ var onTimeoutSelectInput = function (evt) {
 };
 // Функция задает варианты соответствий между кол-вом комнат и гостей
 var onRoomsNumberInput = function () {
-  var fragment = document.createDocumentFragment();
-  optionsCapacity.forEach(setSelectOptions, fragment);
+  optionsCapacity.forEach(setSelectOptions);
   selectCapacity.innerHTML = '';
-  selectCapacity.appendChild(fragment);
+  selectCapacity.appendChild(optionsFragment);
   selectCapacity.selectedIndex = 0;
 };
 // Функция отбирает доступные варианты кол-ва гостей для выбранного кол-ва комнат
@@ -348,7 +347,7 @@ var setSelectOptions = function (option) {
   var guestsNumber = option.value;
   if ((guestsNumber <= roomsNumber && roomsNumber < 100 && guestsNumber > 0)
       || (guestsNumber === '0' && roomsNumber === '100')) {
-    this.appendChild(option);
+    optionsFragment.appendChild(option);
   }
 };
 // Функция выставляет нижнюю границу цены аренди от типа строения
@@ -369,7 +368,7 @@ var onTypeSelectInput = function (evt) {
     default:
       inputRentPrice.min = 0;
       inputRentPrice.placeholder = 0;
-  };
+  }
 };
 // Функция описывает действия по клику на кнопку reset в форме
 var onResetButtonClick = function () {
@@ -461,6 +460,7 @@ selectTimeout.addEventListener('input', onTimeoutSelectInput);
 var selectRooms = document.getElementById('room_number');
 var selectCapacity = document.getElementById('capacity');
 var optionsCapacity = selectCapacity.querySelectorAll('option');
+var optionsFragment = document.createDocumentFragment();
 selectRooms.addEventListener('input', onRoomsNumberInput);
 selectRooms.dispatchEvent(inputEvt);
 
