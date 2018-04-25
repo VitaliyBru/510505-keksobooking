@@ -30,11 +30,11 @@ var minRentPrice = {
 var ONE_HUNDRED_ROOMS = 100;
 var ZERO_GUESTS = 0;
 var boundaryPinMove = {
-    minX: 300,
-    minY: 150,
-    maxX: 900 - MAIN_PIN.dimansions.width,
-    maxY: 500
-  };
+  minX: 300,
+  minY: 150,
+  maxX: 900 - MAIN_PIN.dimansions.width,
+  maxY: 500
+};
 
 var Announcement = function () {
   this.author = {
