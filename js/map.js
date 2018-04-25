@@ -27,6 +27,8 @@ var minRentPrice = {
   house: 5000,
   palace: 10000
 };
+var ONE_HUNDRED_ROOMS = 100;
+var ZERO_GUESTS = 0;
 
 var Announcement = function () {
   this.author = {
@@ -351,8 +353,11 @@ var onRoomsNumberInput = function () {
 var setSelectOptions = function (option) {
   var roomsNumber = selectRooms.value;
   var guestsNumber = option.value;
-  if ((guestsNumber <= roomsNumber && roomsNumber < 100 && guestsNumber > 0)
-      || (guestsNumber === '0' && roomsNumber === '100')) {
+  // Если комнат меньше ста – гостей больше ноля, но не больше чем комнат
+  // ИЛИ для ста комнат – ноль гостей
+  if ((guestsNumber <= roomsNumber && roomsNumber < ONE_HUNDRED_ROOMS
+    && guestsNumber > ZERO_GUESTS) || (guestsNumber === ZERO_GUESTS.toString()
+    && roomsNumber === ONE_HUNDRED_ROOMS.toString())) {
     optionsFragment.appendChild(option);
   }
 };
@@ -382,7 +387,8 @@ var setAdFormToInactive = function () {
 // Функцмя удаляет пины похожих объявлений из разметки
 var delitePins = function () {
   for (var i = pinAssets.container.children.length - 1; i >= 0; i--) {
-    if (pinAssets.container.children[i].className === 'map__pin') {
+    if (pinAssets.container.children[i].classList.contains('map__pin') &&
+        !pinAssets.container.children[i].classList.contains('map__pin--main')) {
       pinAssets.container.removeChild(pinAssets.container.children[i]);
     }
   }
