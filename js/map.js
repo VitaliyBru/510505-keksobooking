@@ -4,15 +4,28 @@ var PIN_DIMENSIONS = {
   height: 70,
   width: 50
 };
-var MAIN_PIN_DIMENSIONS = {
-  height: 80,
-  width: 64
+var MAIN_PIN = {
+  dimansions: {
+    height: 80,
+    width: 64
+  },
+  startPosition: {
+    left: 570,
+    top: 375
+  }
 };
-var TYPE_IN_RUSSIAN = {
+var ESC_KEYCODE = 27;
+var typeInRussian = {
   palace: 'дворец',
   flat: 'квартира',
   house: 'дом',
   bungalo: 'лачуга'
+};
+var minRentPrice = {
+  bungalo: 0,
+  flat: 1000,
+  house: 5000,
+  palace: 10000
 };
 
 var Announcement = function () {
@@ -171,16 +184,19 @@ var getAnnouncement = function (dataList, index) {
   return announcement;
 };
 
-// Функция возвращает созданный элемент «pin»
-var makePin = function (templatePin, announcement) {
-  var pinElement = templatePin.cloneNode(true);
+// Функция добавляет созданный элемент «pin» во фрагмент
+var makePin = function (announcement, index) {
+  var pinElement = pinAssets.template.cloneNode(true);
+  pinElement.dataset.announcement = index;
   var pinImgElement = pinElement.querySelector('img');
-  pinImgElement.setAttribute('src', announcement.author.avatar);
-  pinImgElement.setAttribute('alt', announcement.offer.title);
+  pinImgElement.src = announcement.author.avatar;
+  pinImgElement.alt = announcement.offer.title;
   // задаем координаты галочки
-  pinElement.style.left = (announcement.location.x - PIN_DIMENSIONS.width / 2) + 'px';
-  pinElement.style.top = (announcement.location.y - PIN_DIMENSIONS.height) + 'px';
-  return pinElement;
+  pinElement.style.left =
+      (announcement.location.x - PIN_DIMENSIONS.width / 2) + 'px';
+  pinElement.style.top =
+      (announcement.location.y - PIN_DIMENSIONS.height) + 'px';
+  pinAssets.fragment.appendChild(pinElement);
 };
 
 // Функция возвращает копию шаблона и заполняет ее
@@ -189,7 +205,7 @@ var fillInCard = function (templateCard, announcement) {
   var announcementCard = templateCard.cloneNode(true);
   // аватар пользователя в img .popup__avatar
   announcementCard.querySelector('.popup__avatar')
-      .setAttribute('src', announcement.author.avatar);
+      .src = announcement.author.avatar;
   // Заголовок в .popup__title
   announcementCard.querySelector('.popup__title')
       .textContent = announcement.offer.title;
@@ -202,7 +218,7 @@ var fillInCard = function (templateCard, announcement) {
   + '&#x20bd;<span>/ночь</span>';
   // Тип жилья in .popup__type
   announcementCard.querySelector('.popup__type')
-      .textContent = TYPE_IN_RUSSIAN[announcement.offer.type];
+      .textContent = typeInRussian[announcement.offer.type];
   // Кол-во комнат для кол-ва гостей .popup__text--capacity
   announcementCard.querySelector('.popup__text--capacity')
       .textContent = announcement.offer.rooms + ' комнат для '
@@ -231,41 +247,31 @@ var fillInCard = function (templateCard, announcement) {
   // i без var по настоянию тревиса
   for (i = 0; i < announcement.offer.photos.length; i++) {
     var image = imageTemplate.cloneNode();
-    image.setAttribute('src', announcement.offer.photos[i]);
+    image.src = announcement.offer.photos[i];
     imagesContainer.appendChild(image);
   }
   announcementCard.querySelector('.popup__close')
-      .addEventListener('click',
-          function () {
-            mapContainer.removeChild(
-                mapContainer.querySelector('.map__card.popup')
-            );
-          }
-      );
+      .addEventListener('click', onPopupCloseButtonClick);
   return announcementCard;
 };
 // Функция добавляет пины в ДОМ
 var drawPinsOnMap = function () {
-  for (var i = 0; i < bills.length; i++) {
-    var pin = makePin(pinTemplate, bills[i]);
-    pin.dataset.announcement = i;
-    // Наполняем фрагмент пинами
-    pinFragment.appendChild(pin);
-  }
+  bills.forEach(makePin);
   // вставить фрагмент в .map__pins
-  document.querySelector('.map__pins').appendChild(pinFragment);
+  pinAssets.container.appendChild(pinAssets.fragment);
 };
 var onMainPinFirstMouseup = function () {
   drawPinsOnMap();
   mapContainer.classList.remove('map--faded');
-  document.querySelector('.ad-form').classList.remove('ad-form--disabled');
   mainPin.removeEventListener('mouseup', onMainPinFirstMouseup);
+  activateAdForm();
   inputAddress.value = getNailPinPosition(mainPin.style);
+  buttonReset.addEventListener('click', onResetButtonClick);
 };
 // Возвращает координаты острия пина
 var getNailPinPosition = function (style) {
-  return (parseInt(style.left, 10) + MAIN_PIN_DIMENSIONS.width / 2) + ', '
-      + (parseInt(style.top, 10) + MAIN_PIN_DIMENSIONS.height);
+  return (parseInt(style.left, 10) + MAIN_PIN.dimansions.width / 2) + ', '
+      + (parseInt(style.top, 10) + MAIN_PIN.dimansions.height);
 };
 // Функция отображает подробности объявления
 var showAnnouncementDitails = function (announcement) {
@@ -276,12 +282,40 @@ var showAnnouncementDitails = function (announcement) {
   if (popup) {
     mapContainer.replaceChild(cardAnnouncement, popup);
   } else {
-    mapContainer.insertBefore(
-        cardAnnouncement,
-        document.querySelector('.map__filters-container')
-    );
+    mapContainer.insertBefore(cardAnnouncement, mapFiltersContainer);
+    document.addEventListener('keydown', onEscKeydown);
   }
 };
+// функция переводит страницу в активное состояние
+var activateAdForm = function () {
+  formAdForm.classList.remove('ad-form--disabled');
+  fieldsets.forEach(setDisabledOff);
+};
+// Функуия добавляет элементу атрибут disable
+var setDisabledOff = function (htmlElement) {
+  htmlElement.disabled = false;
+};
+// функция переводит страницу в не активное состояние
+var inactivateAdForm = function () {
+  formAdForm.classList.add('ad-form--disabled');
+  fieldsets.forEach(setDisabledOn);
+};
+// Функуия отключает элементу атрибут disable
+var setDisabledOn = function (htmlElement) {
+  htmlElement.disabled = true;
+};
+// Закрывает окно с подробностями обьявления
+var onPopupCloseButtonClick = function () {
+  mapContainer.removeChild(mapContainer.querySelector('.map__card.popup'));
+  document.removeEventListener('keydown', onEscKeydown);
+};
+// Закрывает окно с подробностями обьявления по нажатию на клавишу escape
+var onEscKeydown = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    onPopupCloseButtonClick();
+  }
+};
+// Открывает окно с подробностями обьявления
 var onPinClick = function (evt) {
   var pin = getPinElement(evt.target);
   if (pin) {
@@ -291,12 +325,76 @@ var onPinClick = function (evt) {
 // Функция возвращает пин или null если пин не найден
 var getPinElement = function (element) {
   var pinElement = null;
-  if (element.className === 'map__pin') {
+  if (element.dataset.announcement > -1) {
     pinElement = element;
-  } else if (element.parentElement.className === 'map__pin') {
+  } else if (element.parentElement.dataset.announcement > -1) {
     pinElement = element.parentElement;
   }
   return pinElement;
+};
+// Функция задает время выезда на основе времени заезда
+var onTimeinSelectInput = function (evt) {
+  selectTimeout.selectedIndex = evt.target.selectedIndex;
+};
+// Функция задает время заезда на основе времени выезда
+var onTimeoutSelectInput = function (evt) {
+  selectTimein.selectedIndex = evt.target.selectedIndex;
+};
+// Функция задает варианты соответствий между кол-вом комнат и гостей
+var onRoomsNumberInput = function () {
+  optionsCapacity.forEach(setSelectOptions);
+  selectCapacity.innerHTML = '';
+  selectCapacity.appendChild(optionsFragment);
+  selectCapacity.selectedIndex = 0;
+};
+// Функция отбирает доступные варианты кол-ва гостей для выбранного кол-ва комнат
+var setSelectOptions = function (option) {
+  var roomsNumber = selectRooms.value;
+  var guestsNumber = option.value;
+  if ((guestsNumber <= roomsNumber && roomsNumber < 100 && guestsNumber > 0)
+      || (guestsNumber === '0' && roomsNumber === '100')) {
+    optionsFragment.appendChild(option);
+  }
+};
+// Функция выставляет нижнюю границу цены аренди от типа строения
+var onTypeSelectInput = function (evt) {
+  inputRentPrice.min = minRentPrice[evt.target.value];
+  inputRentPrice.placeholder = minRentPrice[evt.target.value];
+};
+// Функция описывает действия по клику на кнопку reset в форме
+var onResetButtonClick = function () {
+  fireEscKeydownEvent();
+  delitePins();
+  mapContainer.classList.add('map--faded');
+  mainPin.addEventListener('mouseup', onMainPinFirstMouseup);
+  setAdFormToInactive();
+};
+// Функция для перевода формы в неактивный режим
+var setAdFormToInactive = function () {
+  formAdForm.reset();
+  buttonReset.removeEventListener('click', onResetButtonClick);
+  inputTitle.removeEventListener('invalid', onInvalidFire);
+  inputRentPrice.removeEventListener('invalid', onInvalidFire);
+  inputTitle.classList.remove('validity');
+  inputRentPrice.classList.remove('validity');
+  inactivateAdForm();
+};
+// Функцмя удаляет пины похожих объявлений из разметки
+var delitePins = function () {
+  for (var i = pinAssets.container.children.length - 1; i >= 0; i--) {
+    if (pinAssets.container.children[i].className === 'map__pin') {
+      pinAssets.container.removeChild(pinAssets.container.children[i]);
+    }
+  }
+};
+// Функция эмулирует нажатие клавиши ESCAPE
+var fireEscKeydownEvent = function () {
+  var keydownEvt = new Event('keydown');
+  keydownEvt.keyCode = ESC_KEYCODE;
+  document.dispatchEvent(keydownEvt);
+};
+var onInvalidFire = function (evt) {
+  evt.target.classList.add('validity');
 };
 
 // Эмулируем массив обьявлений пользователей
@@ -309,17 +407,55 @@ for (var i = 0; i < 8; i++) {
 var mapContainer = document.querySelector('.map');
 // Получаем шаблон из верстки
 var template = document.querySelector('template').content;
-// получить темплайт пина
-var pinTemplate = template.querySelector('.map__pin');
-// Создаем фрагмент
-var pinFragment = document.createDocumentFragment();
+// Получаем необходимые для пина элементы из верстки
+var pinAssets = {
+  template: template.querySelector('.map__pin'),
+  container: mapContainer.querySelector('.map__pins'),
+  fragment: document.createDocumentFragment()
+};
 // Поле ввода адреса
 var inputAddress = document.querySelector('#address');
+var formAdForm = document.querySelector('.ad-form');
+var fieldsets = formAdForm.querySelectorAll('.ad-form fieldset');
 // Получаем пин польлзователя .map__pin--main
 var mainPin = mapContainer.querySelector('.map__pin--main');
+// Слушатель для активации сервиса keksobooking
 mainPin.addEventListener('mouseup', onMainPinFirstMouseup);
-
 
 // Шаблон карточки
 var cardTemplate = template.querySelector('.map__card');
-mapContainer.querySelector('.map__pins').addEventListener('click', onPinClick);
+// Элемент перед которым вставляется элемент card
+var mapFiltersContainer = document.querySelector('.map__filters-container');
+// Слушатель для показа подробностей обьявления
+pinAssets.container.addEventListener('click', onPinClick);
+
+// Будем использовать эвент для первичной синхронизации полей
+var inputEvt = new Event('input');
+
+// ТЗ 1.7 функционал для кнопки reset (line 269)
+var buttonReset = formAdForm.querySelector('.ad-form__reset');
+
+// ТЗ пункт 2.3 «Тип жилья» определяет минимальное значение поля «Цена за ночь»
+var inputRentPrice = document.getElementById('price');
+var selectBuildingType = document.getElementById('type');
+selectBuildingType.addEventListener('input', onTypeSelectInput);
+selectBuildingType.dispatchEvent(inputEvt);
+
+// ТЗ пункт 2.5 (синхронизация полей заезда и выезда)
+var selectTimein = document.getElementById('timein');
+var selectTimeout = document.getElementById('timeout');
+selectTimein.addEventListener('input', onTimeinSelectInput);
+selectTimeout.addEventListener('input', onTimeoutSelectInput);
+
+// ТЗ пункт 2.6 (синхронизация «Количество комнат» с полем «Количество мест»)
+var selectRooms = document.getElementById('room_number');
+var selectCapacity = document.getElementById('capacity');
+var optionsCapacity = selectCapacity.querySelectorAll('option');
+var optionsFragment = document.createDocumentFragment();
+selectRooms.addEventListener('input', onRoomsNumberInput);
+selectRooms.dispatchEvent(inputEvt);
+
+// ТЗ 1.4 Страница реагирует на неправильно введённые значения в форму
+var inputTitle = document.getElementById('title');
+inputTitle.addEventListener('invalid', onInvalidFire);
+inputRentPrice.addEventListener('invalid', onInvalidFire);
