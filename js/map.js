@@ -27,6 +27,14 @@ var minRentPrice = {
   house: 5000,
   palace: 10000
 };
+var ONE_HUNDRED_ROOMS = 100;
+var ZERO_GUESTS = 0;
+var boundaryPinMove = {
+  minX: 300,
+  minY: 150,
+  maxX: 900 - MAIN_PIN.dimansions.width,
+  maxY: 500
+};
 
 var Announcement = function () {
   this.author = {
@@ -264,6 +272,7 @@ var onMainPinFirstMouseup = function () {
   drawPinsOnMap();
   mapContainer.classList.remove('map--faded');
   mainPin.removeEventListener('mouseup', onMainPinFirstMouseup);
+  mainPin.addEventListener('mousedown', onMainPinMousedown);
   activateAdForm();
   inputAddress.value = getNailPinPosition(mainPin.style);
   buttonReset.addEventListener('click', onResetButtonClick);
@@ -351,23 +360,29 @@ var onRoomsNumberInput = function () {
 var setSelectOptions = function (option) {
   var roomsNumber = selectRooms.value;
   var guestsNumber = option.value;
-  if ((guestsNumber <= roomsNumber && roomsNumber < 100 && guestsNumber > 0)
-      || (guestsNumber === '0' && roomsNumber === '100')) {
+  // Если комнат меньше ста – гостей больше ноля, но не больше чем комнат
+  // ИЛИ для ста комнат – ноль гостей
+  if ((guestsNumber <= roomsNumber && roomsNumber < ONE_HUNDRED_ROOMS
+    && guestsNumber > ZERO_GUESTS) || (guestsNumber === ZERO_GUESTS.toString()
+    && roomsNumber === ONE_HUNDRED_ROOMS.toString())) {
     optionsFragment.appendChild(option);
   }
 };
-// Функция выставляет нижнюю границу цены аренди от типа строения
-var onTypeSelectInput = function (evt) {
-  inputRentPrice.min = minRentPrice[evt.target.value];
-  inputRentPrice.placeholder = minRentPrice[evt.target.value];
+// Функция выставляет нижнюю границу цены аренды от типа строения
+var onTypeSelectInput = function () {
+  inputRentPrice.min = minRentPrice[selectBuildingType.value];
+  inputRentPrice.placeholder = minRentPrice[selectBuildingType.value];
 };
 // Функция описывает действия по клику на кнопку reset в форме
 var onResetButtonClick = function () {
   fireEscKeydownEvent();
   delitePins();
+  mainPinToStartPosition();
   mapContainer.classList.add('map--faded');
+  mainPin.removeEventListener('mousedown', onMainPinMousedown);
   mainPin.addEventListener('mouseup', onMainPinFirstMouseup);
   setAdFormToInactive();
+  inputAddress.value = getNailPinPosition(mainPin.style);
 };
 // Функция для перевода формы в неактивный режим
 var setAdFormToInactive = function () {
@@ -382,10 +397,15 @@ var setAdFormToInactive = function () {
 // Функцмя удаляет пины похожих объявлений из разметки
 var delitePins = function () {
   for (var i = pinAssets.container.children.length - 1; i >= 0; i--) {
-    if (pinAssets.container.children[i].className === 'map__pin') {
+    if (pinAssets.container.children[i].classList.contains('map__pin') &&
+        !pinAssets.container.children[i].classList.contains('map__pin--main')) {
       pinAssets.container.removeChild(pinAssets.container.children[i]);
     }
   }
+};
+var mainPinToStartPosition = function () {
+  mainPin.style.left = MAIN_PIN.startPosition.left + 'px';
+  mainPin.style.top = MAIN_PIN.startPosition.top + 'px';
 };
 // Функция эмулирует нажатие клавиши ESCAPE
 var fireEscKeydownEvent = function () {
@@ -395,6 +415,52 @@ var fireEscKeydownEvent = function () {
 };
 var onInvalidFire = function (evt) {
   evt.target.classList.add('validity');
+};
+// Действия по нажатию мышкой на элементе «map__pin--main»
+var onMainPinMousedown = function () {
+  document.addEventListener('mousemove', onMainPinMousemove);
+  document.addEventListener('mouseup', onMainPinMouseup);
+  pinAssets.container.addEventListener('mouseleave',
+      onPinsContainerMouseleave);
+};
+// Действия при отпускании клавиши мышки
+// после нажания на элементе «map__pin--main»
+var onMainPinMouseup = function () {
+  document.removeEventListener('mousemove', onMainPinMousemove);
+  document.removeEventListener('mouseup', onMainPinMouseup);
+  pinAssets.container.removeEventListener('mouseleave',
+      onPinsContainerMouseleave);
+};
+// Действия при покидании курсора мышки зоны контейнера
+// после нажания на элементе «map__pin--main»
+var onPinsContainerMouseleave = function () {
+  document.removeEventListener('mousemove', onMainPinMousemove);
+  document.removeEventListener('mouseup', onMainPinMouseup);
+  pinAssets.container.removeEventListener('mouseleave',
+      onPinsContainerMouseleave);
+};
+// Функция возвращает откорректированную величину в заданных рамках
+var getValueInRange = function (value, minValue, maxValue) {
+  if (value < minValue) {
+    value = minValue;
+  }
+  if (value > maxValue) {
+    value = maxValue;
+  }
+  return value;
+};
+// Функция перемещает «map__pin--main» вслед за курсором и записывает
+// адрес в поле формы «адрес»
+var onMainPinMousemove = function (evt) {
+  var positionX = parseInt(mainPin.style.left, 10) + evt.movementX;
+  positionX = getValueInRange(positionX, boundaryPinMove.minX,
+      boundaryPinMove.maxX);
+  var positionY = parseInt(mainPin.style.top, 10) + evt.movementY;
+  positionY = getValueInRange(positionY, boundaryPinMove.minY,
+      boundaryPinMove.maxY);
+  mainPin.style.left = positionX + 'px';
+  mainPin.style.top = positionY + 'px';
+  inputAddress.value = getNailPinPosition(mainPin.style);
 };
 
 // Эмулируем массив обьявлений пользователей
@@ -429,9 +495,6 @@ var mapFiltersContainer = document.querySelector('.map__filters-container');
 // Слушатель для показа подробностей обьявления
 pinAssets.container.addEventListener('click', onPinClick);
 
-// Будем использовать эвент для первичной синхронизации полей
-var inputEvt = new Event('input');
-
 // ТЗ 1.7 функционал для кнопки reset (line 269)
 var buttonReset = formAdForm.querySelector('.ad-form__reset');
 
@@ -439,7 +502,7 @@ var buttonReset = formAdForm.querySelector('.ad-form__reset');
 var inputRentPrice = document.getElementById('price');
 var selectBuildingType = document.getElementById('type');
 selectBuildingType.addEventListener('input', onTypeSelectInput);
-selectBuildingType.dispatchEvent(inputEvt);
+onTypeSelectInput();
 
 // ТЗ пункт 2.5 (синхронизация полей заезда и выезда)
 var selectTimein = document.getElementById('timein');
@@ -453,7 +516,7 @@ var selectCapacity = document.getElementById('capacity');
 var optionsCapacity = selectCapacity.querySelectorAll('option');
 var optionsFragment = document.createDocumentFragment();
 selectRooms.addEventListener('input', onRoomsNumberInput);
-selectRooms.dispatchEvent(inputEvt);
+onRoomsNumberInput();
 
 // ТЗ 1.4 Страница реагирует на неправильно введённые значения в форму
 var inputTitle = document.getElementById('title');
