@@ -369,9 +369,9 @@ var setSelectOptions = function (option) {
   }
 };
 // Функция выставляет нижнюю границу цены аренды от типа строения
-var onTypeSelectInput = function (evt) {
-  inputRentPrice.min = minRentPrice[evt.target.value];
-  inputRentPrice.placeholder = minRentPrice[evt.target.value];
+var onTypeSelectInput = function () {
+  inputRentPrice.min = minRentPrice[selectBuildingType.value];
+  inputRentPrice.placeholder = minRentPrice[selectBuildingType.value];
 };
 // Функция описывает действия по клику на кнопку reset в форме
 var onResetButtonClick = function () {
@@ -495,9 +495,6 @@ var mapFiltersContainer = document.querySelector('.map__filters-container');
 // Слушатель для показа подробностей обьявления
 pinAssets.container.addEventListener('click', onPinClick);
 
-// Будем использовать эвент для первичной синхронизации полей
-var inputEvt = new Event('input');
-
 // ТЗ 1.7 функционал для кнопки reset (line 269)
 var buttonReset = formAdForm.querySelector('.ad-form__reset');
 
@@ -505,7 +502,7 @@ var buttonReset = formAdForm.querySelector('.ad-form__reset');
 var inputRentPrice = document.getElementById('price');
 var selectBuildingType = document.getElementById('type');
 selectBuildingType.addEventListener('input', onTypeSelectInput);
-selectBuildingType.dispatchEvent(inputEvt);
+onTypeSelectInput();
 
 // ТЗ пункт 2.5 (синхронизация полей заезда и выезда)
 var selectTimein = document.getElementById('timein');
@@ -519,7 +516,7 @@ var selectCapacity = document.getElementById('capacity');
 var optionsCapacity = selectCapacity.querySelectorAll('option');
 var optionsFragment = document.createDocumentFragment();
 selectRooms.addEventListener('input', onRoomsNumberInput);
-selectRooms.dispatchEvent(inputEvt);
+onRoomsNumberInput();
 
 // ТЗ 1.4 Страница реагирует на неправильно введённые значения в форму
 var inputTitle = document.getElementById('title');
