@@ -71,20 +71,29 @@
     window.pin.pinsContainer.removeEventListener('mouseleave',
         onPinsContainerMouseleave);
   };
+  // Функция записывает координаты острия пина пользователя в поле формы адресс
+  var setAddress = function () {
+    window.form.inputAddress.value = getNailPinPosition(mainPin.style);
+  };
+  // Функция сбрасывает пин пользователя на координаты по умолчанию
+  var resetPosition = function () {
+    mainPin.style.left = MAIN_PIN.startPosition.left;
+    mainPin.style.top = MAIN_PIN.startPosition.top;
+  };
+  // Функция подключает функционал для перетаскивания пина
+  var installDragDriver = function () {
+    mainPin.addEventListener('mousedown', onMainPinMousedown);
+  };
+  // Функция отключает возможность перемещать пин пользователя по карте
+  var uninstallDragDriver = function () {
+    mainPin.removeEventListener('mousedown', onMainPinMousedown);
+  };
+
   window.mainPin = {
     pinEl: mainPin,
-    setAddress: function () {
-      window.form.inputAddress.value = getNailPinPosition(mainPin.style);
-    },
-    resetPosition: function () {
-      mainPin.style.left = MAIN_PIN.startPosition.left;
-      mainPin.style.top = MAIN_PIN.startPosition.top;
-    },
-    installDragDriver: function () {
-      mainPin.addEventListener('mousedown', onMainPinMousedown);
-    },
-    uninstallDragDriver: function () {
-      mainPin.removeEventListener('mousedown', onMainPinMousedown);
-    }
+    setAddress: setAddress,
+    resetPosition: resetPosition,
+    installDragDriver: installDragDriver,
+    uninstallDragDriver: uninstallDragDriver
   };
 })();

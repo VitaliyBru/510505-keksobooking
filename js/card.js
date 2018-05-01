@@ -78,20 +78,21 @@
         .addEventListener('click', onPopupCloseButtonClick);
     return announcementCard;
   };
+  // Функция отображает подробности объявления
+  var showAnnouncementDitails = function (announcement) {
+    var cardAnnouncement = fillInCard(cardTemplate, announcement);
+    // вставляем блок обьявления перед блоком .map__filters-container
+    // или замещаем анологичный если таковой имеется
+    var popup = mapContainer.querySelector('.map__card.popup');
+    if (popup) {
+      mapContainer.replaceChild(cardAnnouncement, popup);
+    } else {
+      mapContainer.insertBefore(cardAnnouncement, mapFiltersContainer);
+      document.addEventListener('keydown', onEscKeydown);
+    }
+  };
 
   window.card = {
-    // Функция отображает подробности объявления
-    showAnnouncementDitails: function (announcement) {
-      var cardAnnouncement = fillInCard(cardTemplate, announcement);
-      // вставляем блок обьявления перед блоком .map__filters-container
-      // или замещаем анологичный если таковой имеется
-      var popup = mapContainer.querySelector('.map__card.popup');
-      if (popup) {
-        mapContainer.replaceChild(cardAnnouncement, popup);
-      } else {
-        mapContainer.insertBefore(cardAnnouncement, mapFiltersContainer);
-        document.addEventListener('keydown', onEscKeydown);
-      }
-    }
+    showAnnouncementDitails: showAnnouncementDitails
   };
 })();

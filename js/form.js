@@ -3,7 +3,7 @@
 (function () {
   var ONE_HUNDRED_ROOMS = 100;
   var ZERO_GUESTS = 0;
-  var minRentPrice = {
+  var minRentPriceMap = {
     bungalo: 0,
     flat: 1000,
     house: 5000,
@@ -38,8 +38,8 @@
   };
   // Функция выставляет нижнюю границу цены аренды от типа строения
   var onTypeSelectInput = function () {
-    inputRentPrice.min = minRentPrice[selectBuildingType.value];
-    inputRentPrice.placeholder = minRentPrice[selectBuildingType.value];
+    inputRentPrice.min = minRentPriceMap[selectBuildingType.value];
+    inputRentPrice.placeholder = minRentPriceMap[selectBuildingType.value];
   };
   var onInvalidFire = function (evt) {
     evt.target.classList.add('validity');
@@ -56,6 +56,29 @@
   var inactivateAdForm = function () {
     formAdForm.classList.add('ad-form--disabled');
     fieldsets.forEach(setDisabledOn);
+  };
+  // функция переводит страницу в активное состояние
+  var activateAdForm = function () {
+    formAdForm.classList.remove('ad-form--disabled');
+    fieldsets.forEach(setDisabledOff);
+  };
+  // Функция для перевода формы в неактивный режим
+  var setAdFormToInactive = function () {
+    formAdForm.reset();
+    inputTitle.removeEventListener('invalid', onInvalidFire);
+    inputRentPrice.removeEventListener('invalid', onInvalidFire);
+    inputTitle.classList.remove('validity');
+    inputRentPrice.classList.remove('validity');
+    inactivateAdForm();
+  };
+  // Функция «препрег» для отправки данных формы на сервер
+  var sendForm = function (onSuccesfullySend) {
+    window.backend.send(new FormData(formAdForm), onSuccesfullySend,
+        window.errorMessage.onError);
+  };
+  // Функция возвращает true если ошибок в заполнении формы не обнаружено
+  var getFormValidity = function () {
+    return formAdForm.checkValidity();
   };
 
   // ТЗ пункт 2.5 (синхронизация полей заезда и выезда)
@@ -85,24 +108,18 @@
 
   var formAdForm = document.querySelector('.ad-form');
   var fieldsets = formAdForm.querySelectorAll('.ad-form fieldset');
+  var buttonReset = formAdForm.querySelector('.ad-form__reset');
+  var buttonSubmit = formAdForm.querySelector('.ad-form__submit');
+  // Поле ввода адреса
+  var inputAddress = document.querySelector('#address');
 
   window.form = {
-    buttonReset: formAdForm.querySelector('.ad-form__reset'),
-    // Поле ввода адреса
-    inputAddress: document.querySelector('#address'),
-    // функция переводит страницу в активное состояние
-    activateAdForm: function () {
-      formAdForm.classList.remove('ad-form--disabled');
-      fieldsets.forEach(setDisabledOff);
-    },
-    // Функция для перевода формы в неактивный режим
-    setAdFormToInactive: function () {
-      formAdForm.reset();
-      inputTitle.removeEventListener('invalid', onInvalidFire);
-      inputRentPrice.removeEventListener('invalid', onInvalidFire);
-      inputTitle.classList.remove('validity');
-      inputRentPrice.classList.remove('validity');
-      inactivateAdForm();
-    }
+    buttonSubmit: buttonSubmit,
+    buttonReset: buttonReset,
+    inputAddress: inputAddress,
+    sendForm: sendForm,
+    getFormValidity: getFormValidity,
+    activateAdForm: activateAdForm,
+    setAdFormToInactive: setAdFormToInactive
   };
 })();
