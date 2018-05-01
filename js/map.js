@@ -8,11 +8,12 @@
 
   var onMainPinFirstMouseup = function () {
     mapContainer.classList.remove('map--faded');
-    window.pin.drawPinsOnMap();
+    window.pin.showSimilarPin();
     window.mainPin.pinEl.removeEventListener('mouseup', onMainPinFirstMouseup);
     window.mainPin.installDragDriver();
     window.form.activateAdForm();
     window.mainPin.setAddress();
+    window.form.buttonSubmit.addEventListener('click', onSubmitButtonClick);
     window.form.buttonReset.addEventListener('click', onResetButtonClick);
   };
   // Функция эмулирует нажатие клавиши ESCAPE
@@ -29,9 +30,22 @@
     window.mainPin.resetPosition();
     window.mainPin.uninstallDragDriver();
     window.mainPin.pinEl.addEventListener('mouseup', onMainPinFirstMouseup);
+    window.form.buttonSubmit.removeEventListener('click', onSubmitButtonClick);
     window.form.buttonReset.removeEventListener('click', onResetButtonClick);
     window.form.setAdFormToInactive();
     window.mainPin.setAddress();
+  };
+  // Функция выполняется после успешной отправки данных формы на сервер
+  var onSuccesfullySend = function () {
+    onResetButtonClick();
+    document.querySelector('.success').classList.remove('hidden');
+  };
+  // Функция выполняется при клике на кнопку формы «отправить»
+  var onSubmitButtonClick = function (evt) {
+    evt.preventDefault();
+    if (window.form.getFormValidity()) {
+      window.form.sendForm(onSuccesfullySend);
+    }
   };
 
   // Слушатель для активации сервиса keksobooking

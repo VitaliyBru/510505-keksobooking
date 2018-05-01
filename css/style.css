@@ -1213,7 +1213,27 @@ fieldset {
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
 }
+
 .ad-form__element input.validity:invalid {
   -webkit-box-shadow: 0 0 0 3px red;
           box-shadow: 0 0 0 3px red;
+}
+
+.error__message {
+  dispay: inline-block;
+  position: fixed;
+  padding: 10px 20px;
+  left: 50%;
+  top:20%;
+  transform: translate(-50%);
+  border-radius: 20px;
+  border: 1px solid brown;
+  background-color: #ffeeaa;
+  text-align: center;
+  z-index: 10;
+}
+
+.error__message button {
+  margin-top: 10px;
+  border-radius: 5px;
 }
