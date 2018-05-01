@@ -1,7 +1,8 @@
 'use strict';
 
 (function () {
-  var FIVE_SECONDS = 5;
+  var STEPS_QUANTITY = 5;
+  var TIMER_STEP_DURATION = 1000;
   var container = document.querySelector('.map__pins');
   // Функция отрисовывает сообщение об ошибке
   var onError = function (errorMessage) {
@@ -9,7 +10,7 @@
     var brEl = document.createElement('br');
     var buttonEl = document.createElement('button');
     var timerId = null;
-    var timeLeft = FIVE_SECONDS;
+    var timeLeft = STEPS_QUANTITY;
     // Функция для обратного отсчета времени до авто закрытия popup(-а)
     var timer = function () {
       timeLeft--;
@@ -18,7 +19,7 @@
         return;
       }
       buttonEl.textContent = 'закрыть (' + timeLeft + 'сек)';
-      timerId = setTimeout(timer, 1000);
+      timerId = setTimeout(timer, TIMER_STEP_DURATION);
     };
     // Создаем элемент с текстом сообщения об ошибке
     errorMessageEl.textContent = errorMessage;
@@ -32,7 +33,7 @@
       container.removeChild(errorMessageEl);
     });
     // Старт обратного отсчета
-    timerId = setTimeout(timer, 1000);
+    timerId = setTimeout(timer, TIMER_STEP_DURATION);
   };
 
   window.errorMessage = {
