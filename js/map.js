@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
-
   // получаем блок мэп
   var mapContainer = document.querySelector('.map');
 
@@ -16,16 +14,10 @@
     window.form.buttonSubmit.addEventListener('click', onSubmitButtonClick);
     window.form.buttonReset.addEventListener('click', onResetButtonClick);
   };
-  // Функция эмулирует нажатие клавиши ESCAPE
-  var fireEscKeydownEvent = function () {
-    var keydownEvt = new Event('keydown');
-    keydownEvt.keyCode = ESC_KEYCODE;
-    document.dispatchEvent(keydownEvt);
-  };
   // Функция описывает действия по клику на кнопку reset в форме
   var onResetButtonClick = function () {
     mapContainer.classList.add('map--faded');
-    fireEscKeydownEvent();
+    window.commonParts.fireEscKeydownEvent();
     window.pin.delitePins();
     window.mainPin.resetPosition();
     window.mainPin.uninstallDragDriver();
@@ -33,6 +25,7 @@
     window.form.buttonSubmit.removeEventListener('click', onSubmitButtonClick);
     window.form.buttonReset.removeEventListener('click', onResetButtonClick);
     window.form.setAdFormToInactive();
+    window.filters.disengageFilters();
     window.mainPin.setAddress();
   };
   // Функция выполняется после успешной отправки данных формы на сервер
