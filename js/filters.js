@@ -3,26 +3,28 @@
 (function () {
   var BITE = 255;
   var VISIBLE_PINS_QUANTITY = 5;
+  var TIMEOUT_DURATION = 500;
   var BitMask = {
     TIPE: 1,
     PRICE: 2,
     ROOMS: 4,
     GUESTS: 8,
     FEATURES: 16
-  }
+  };
   var PriceLimit = {
     LOW: 10000,
     MIDDLE: 50000
-  }
+  };
   var pins = [];
   var bills = {};
   var value = null;
   var visiblePins = null;
+  var idTimeout = null;
   var form = document.querySelector('.map__filters');
   var featuresField = document.getElementById('housing-features');
   // Функция скрывает или показывает пины обьявлений на основании
   // выставленных фильтров
-  var pinsHidder = function (testValue, bitMask, _index ) {
+  var pinsHidder = function (testValue, bitMask, _index) {
     var isHide = (testValue === value || value === 'any');
     var mask = parseInt(pins[_index].dataset.filtersMask, 10);
     mask = isHide ? mask & (BITE - bitMask) : mask | bitMask;
@@ -71,26 +73,36 @@
       bills.forEach(onHouseGuests);
     }
   };
+  // Функция фильтрует объявления по наличию дополнительных опций
+  var showPinsWithFeatures = function () {
+    visiblePins = VISIBLE_PINS_QUANTITY;
+    var data = new FormData(form);
+    var list = data.getAll('features');
+    bills.forEach(function (annoucement, index) {
+      var isVisible = true;
+      list.forEach(function (feature) {
+        isVisible &= annoucement.offer.features.includes(feature);
+      });
+      value = isVisible ? 'visible' : 'hidden';
+      pinsHidder('visible', BitMask.FEATURES, index);
+    });
+    window.commonParts.fireEscKeydownEvent();
+    idTimeout = null;
+  };
+  // Функция фильтрует объявления по данным из блоков «select»
   var onFilterChange = function (evt) {
     value = evt.target.value;
     visiblePins = VISIBLE_PINS_QUANTITY;
     window.commonParts.fireEscKeydownEvent();
     filtersMap[evt.target.name]();
   };
+  // Функция обрабатывает клики по дополнительным опциям
   var onFilterFeaturesClick = function (evt) {
     if (evt.target.localName === 'input') {
-      visiblePins = VISIBLE_PINS_QUANTITY;
-      window.commonParts.fireEscKeydownEvent();
-      var data = new FormData(form);
-      var list = data.getAll('features');
-      bills.forEach(function (annoucement, index) {
-        var isVisible = true;
-        list.forEach(function (feature) {
-          isVisible &= annoucement.offer.features.includes(feature);
-        });
-        value = isVisible ? 'visible' : 'hidden';
-        pinsHidder('visible', BitMask.FEATURES, index);
-      });
+      if (idTimeout) {
+        clearTimeout(idTimeout);
+      }
+      idTimeout = setTimeout(showPinsWithFeatures, TIMEOUT_DURATION);
     }
   };
   // Функция активирует алгоритм фильтрации

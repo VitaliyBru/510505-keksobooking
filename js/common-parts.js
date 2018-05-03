@@ -10,6 +10,6 @@
   };
 
   window.commonParts = {
-  	fireEscKeydownEvent: fireEscKeydownEvent
-  }
+    fireEscKeydownEvent: fireEscKeydownEvent
+  };
 })();
