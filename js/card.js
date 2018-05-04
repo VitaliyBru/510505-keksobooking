@@ -93,6 +93,7 @@
   };
 
   window.card = {
-    showAnnouncementDitails: showAnnouncementDitails
+    showAnnouncementDitails: showAnnouncementDitails,
+    onPopupCloseButtonClick: onPopupCloseButtonClick
   };
 })();

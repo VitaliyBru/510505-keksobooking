@@ -10,12 +10,14 @@
       .querySelector('.map__pin');
   var fragment = document.createDocumentFragment();
   var pinsContainer = document.querySelector('.map__pins');
-  var bills = [];
+  var pinElArray = [];
+  var bills = {};
 
   // Функция добавляет созданный элемент «pin» во фрагмент
   var makePin = function (announcement, index) {
     var pinElement = template.cloneNode(true);
     pinElement.dataset.announcement = index;
+    pinElement.dataset.filtersMask = 0;
     if (index > PIN_INDEX_LIMIT) {
       pinElement.classList.add('hidden');
     }
@@ -28,6 +30,7 @@
     pinElement.style.top =
         (announcement.location.y - PIN_DIMENSIONS.height) + 'px';
     fragment.appendChild(pinElement);
+    pinElArray.push(pinElement);
   };
   // Функция возвращает пин или null если пин не найден
   var getPinElement = function (element) {
@@ -52,21 +55,32 @@
     bills.forEach(makePin);
     pinsContainer.appendChild(fragment);
     pinsContainer.addEventListener('click', onPinClick);
+    window.filters.engageFilters();
   };
   var showSimilarPin = function () {
     window.backend.load(onSucceedDownload, window.errorMessage.onError);
   };
   // Функцмя удаляет пины похожих объявлений из разметки
   var delitePins = function () {
-    var children = pinsContainer.querySelectorAll('.map__pin:not(.map__pin--main)');
-    children.forEach(function (child) {
+    pinElArray.forEach(function (child) {
       pinsContainer.removeChild(child);
     });
     pinsContainer.removeEventListener('click', onPinClick);
+    pinElArray = [];
+  };
+  // Функция позволяет получить доступ к объекту за пределами модуля
+  var getBills = function () {
+    return bills;
+  };
+  // Функция возвращает массив пин-элементов
+  var getPinElArray = function () {
+    return pinElArray;
   };
 
   window.pin = {
     pinsContainer: pinsContainer,
+    getPinElArray: getPinElArray,
+    getBills: getBills,
     showSimilarPin: showSimilarPin,
     delitePins: delitePins
   };
