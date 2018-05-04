@@ -4,6 +4,7 @@
   var BITE = 255;
   var VISIBLE_PINS_QUANTITY = 5;
   var TIMEOUT_DURATION = 500;
+  var FILTER_NOT_CHOSEN = 'any';
   var BitMask = {
     TIPE: 1,
     PRICE: 2,
@@ -15,6 +16,11 @@
     LOW: 10000,
     MIDDLE: 50000
   };
+  var PriceCategory = {
+    LOW: 'low',
+    MIDDLE: 'middle',
+    HIGH: 'high'
+  };
   var pins = [];
   var bills = {};
   var value = null;
@@ -24,16 +30,16 @@
   var featuresField = document.getElementById('housing-features');
   // Функция скрывает или показывает пины обьявлений на основании
   // выставленных фильтров
-  var pinsHidder = function (testValue, bitMask, _index) {
-    var isHide = (testValue === value || value === 'any');
-    var mask = parseInt(pins[_index].dataset.filtersMask, 10);
-    mask = isHide ? mask & (BITE - bitMask) : mask | bitMask;
-    pins[_index].dataset.filtersMask = mask;
+  var pinsHidder = function (testValue, bitMask, index) {
+    var isVisible = (testValue === value || value === FILTER_NOT_CHOSEN);
+    var mask = parseInt(pins[index].dataset.filtersMask, 10);
+    mask = isVisible ? mask & (BITE - bitMask) : mask | bitMask;
+    pins[index].dataset.filtersMask = mask;
     if (mask || visiblePins <= 0) {
-      pins[_index].classList.add('hidden');
+      pins[index].classList.add('hidden');
     } else {
       visiblePins--;
-      pins[_index].classList.remove('hidden');
+      pins[index].classList.remove('hidden');
     }
   };
   // Фильтрация по типу жилья
@@ -42,11 +48,11 @@
   };
   // Фильтрация по цене за ночь
   var onHousePrice = function (annoucement, index) {
-    var price = 'high';
+    var price = PriceCategory.HIGH;
     if (annoucement.offer.price < PriceLimit.LOW) {
-      price = 'low';
+      price = PriceCategory.LOW;
     } else if (annoucement.offer.price <= PriceLimit.MIDDLE) {
-      price = 'middle';
+      price = PriceCategory.MIDDLE;
     }
     pinsHidder(price, BitMask.PRICE, index);
   };
