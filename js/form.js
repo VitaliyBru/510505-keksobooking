@@ -61,10 +61,12 @@
   var activateAdForm = function () {
     formAdForm.classList.remove('ad-form--disabled');
     fieldsets.forEach(setDisabledOff);
+    window.imagePreview.engage();
   };
   // Функция для перевода формы в неактивный режим
   var setAdFormToInactive = function () {
     formAdForm.reset();
+    window.imagePreview.disengage();
     inputTitle.removeEventListener('invalid', onInvalidFire);
     inputRentPrice.removeEventListener('invalid', onInvalidFire);
     inputTitle.classList.remove('validity');

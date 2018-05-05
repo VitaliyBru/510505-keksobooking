@@ -8,17 +8,17 @@
   var SUCCESS_CODE = 200;
   var TEN_SECONDS = 10000;
   // Функция содержит общую часть кода для «downloadData» и «uploadData»
-  var preSetXhr = function (_onError) {
-    var _xhr = new XMLHttpRequest();
-    _xhr.responseType = 'json';
-    _xhr.addEventListener('error', function () {
-      _onError('Ошибка соединения');
+  var preSetXhr = function (onError) {
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.addEventListener('error', function () {
+      onError('Ошибка соединения');
     });
-    _xhr.addEventListener('timeout', function () {
-      _onError('Нет ответа от сервера.');
+    xhr.addEventListener('timeout', function () {
+      onError('Нет ответа от сервера.');
     });
-    _xhr.timeout = TEN_SECONDS;
-    return _xhr;
+    xhr.timeout = TEN_SECONDS;
+    return xhr;
   };
   // Функция для получения данных с сервера
   var downloadData = function (onLoad, onError) {
