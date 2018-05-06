@@ -10,6 +10,7 @@
   };
 
   window.commonParts = {
+    ESC_KEYCODE: ESC_KEYCODE,
     fireEscKeydownEvent: fireEscKeydownEvent
   };
 })();

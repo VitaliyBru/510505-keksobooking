@@ -1,12 +1,12 @@
 'use strict';
 
 (function () {
-  var Url = {
+  var SUCCESS_CODE = 200;
+  var TEN_SECONDS = 10000;
+  var APIUrl = {
     PULL_DATA: 'https://js.dump.academy/keksobooking/data',
     PUSH_DATA: 'https://js.dump.academy/keksobooking'
   };
-  var SUCCESS_CODE = 200;
-  var TEN_SECONDS = 10000;
   // Функция содержит общую часть кода для «downloadData» и «uploadData»
   var preSetXhr = function (onError) {
     var xhr = new XMLHttpRequest();
@@ -23,7 +23,7 @@
   // Функция для получения данных с сервера
   var downloadData = function (onLoad, onError) {
     var xhr = preSetXhr(onError);
-    xhr.open('GET', Url.PULL_DATA);
+    xhr.open('GET', APIUrl.PULL_DATA);
     xhr.addEventListener('load', function () {
       if (xhr.status === SUCCESS_CODE) {
         onLoad(xhr.response);
@@ -36,7 +36,7 @@
   // Функция для отправки данных формы на сервер
   var uploadData = function (data, onLoad, onError) {
     var xhr = preSetXhr(onError);
-    xhr.open('POST', Url.PUSH_DATA);
+    xhr.open('POST', APIUrl.PUSH_DATA);
     xhr.addEventListener('load', function () {
       if (xhr.status === SUCCESS_CODE) {
         onLoad();

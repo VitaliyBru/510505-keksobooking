@@ -80,20 +80,12 @@
     mainPin.style.left = MAIN_PIN.startPosition.left;
     mainPin.style.top = MAIN_PIN.startPosition.top;
   };
-  // Функция подключает функционал для перетаскивания пина
-  var installDragDriver = function () {
-    mainPin.addEventListener('mousedown', onMainPinMousedown);
-  };
-  // Функция отключает возможность перемещать пин пользователя по карте
-  var uninstallDragDriver = function () {
-    mainPin.removeEventListener('mousedown', onMainPinMousedown);
-  };
+  // Активируем возможноть перемещать пин пользователя по карте
+  mainPin.addEventListener('mousedown', onMainPinMousedown);
 
   window.mainPin = {
     pinEl: mainPin,
     setAddress: setAddress,
-    resetPosition: resetPosition,
-    installDragDriver: installDragDriver,
-    uninstallDragDriver: uninstallDragDriver
+    resetPosition: resetPosition
   };
 })();
