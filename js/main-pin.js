@@ -86,7 +86,6 @@
   window.mainPin = {
     pinEl: mainPin,
     setAddress: setAddress,
-    resetPosition: resetPosition,
-    onMainPinMousedown: onMainPinMousedown,
+    resetPosition: resetPosition
   };
 })();
