@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var ESC_KEYCODE = 27;
   var cardTemplate = document.querySelector('template').content
       .querySelector('.map__card');
   var mapContainer = document.querySelector('.map');
@@ -19,7 +18,7 @@
   };
   // Закрывает окно с подробностями обьявления по нажатию на клавишу escape
   var onEscKeydown = function (evt) {
-    if (evt.keyCode === ESC_KEYCODE) {
+    if (evt.keyCode === window.commonParts.ESC_KEYCODE) {
       onPopupCloseButtonClick();
     }
   };
