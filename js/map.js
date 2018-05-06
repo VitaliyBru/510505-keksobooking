@@ -8,11 +8,10 @@
     mapContainer.classList.remove('map--faded');
     window.pin.showSimilarPin();
     window.mainPin.pinEl.removeEventListener('mouseup', onMainPinFirstMouseup);
-    window.mainPin.installDragDriver();
     window.form.activateAdForm();
     window.mainPin.setAddress();
-    window.form.buttonSubmit.addEventListener('click', onSubmitButtonClick);
-    window.form.buttonReset.addEventListener('click', onResetButtonClick);
+    window.form.element.addEventListener('submit', onSubmitButtonClick);
+    window.form.element.addEventListener('reset', onResetButtonClick);
   };
   // Функция описывает действия по клику на кнопку reset в форме
   var onResetButtonClick = function () {
@@ -20,10 +19,9 @@
     window.commonParts.fireEscKeydownEvent();
     window.pin.delitePins();
     window.mainPin.resetPosition();
-    window.mainPin.uninstallDragDriver();
     window.mainPin.pinEl.addEventListener('mouseup', onMainPinFirstMouseup);
-    window.form.buttonSubmit.removeEventListener('click', onSubmitButtonClick);
-    window.form.buttonReset.removeEventListener('click', onResetButtonClick);
+    window.form.element.removeEventListener('submit', onSubmitButtonClick);
+    window.form.element.removeEventListener('reset', onResetButtonClick);
     window.form.setAdFormToInactive();
     window.filters.disengageFilters();
     window.mainPin.setAddress();

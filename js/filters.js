@@ -5,6 +5,10 @@
   var VISIBLE_PINS_QUANTITY = 5;
   var TIMEOUT_DURATION = 500;
   var FILTER_NOT_CHOSEN = 'any';
+  var PinState = {
+    VISIBLE: 1,
+    HIDDEN: 0
+  };
   var BitMask = {
     TIPE: 1,
     PRICE: 2,
@@ -27,7 +31,7 @@
   var visiblePins = null;
   var idTimeout = null;
   var form = document.querySelector('.map__filters');
-  var featuresField = document.getElementById('housing-features');
+  var featuresField = document.querySelector('#housing-features');
   // Функция скрывает или показывает пины обьявлений на основании
   // выставленных фильтров
   var pinsHidder = function (testValue, bitMask, index) {
@@ -43,11 +47,11 @@
     }
   };
   // Фильтрация по типу жилья
-  var onHouseType = function (annoucement, index) {
+  var compareHouseType = function (annoucement, index) {
     pinsHidder(annoucement.offer.type, BitMask.TIPE, index);
   };
   // Фильтрация по цене за ночь
-  var onHousePrice = function (annoucement, index) {
+  var compareHousePrice = function (annoucement, index) {
     var price = PriceCategory.HIGH;
     if (annoucement.offer.price < PriceLimit.LOW) {
       price = PriceCategory.LOW;
@@ -57,26 +61,26 @@
     pinsHidder(price, BitMask.PRICE, index);
   };
   // Фильтрация по колличеству комнат
-  var onHouseRooms = function (annoucement, index) {
+  var compareHouseRooms = function (annoucement, index) {
     pinsHidder(annoucement.offer.rooms.toString(), BitMask.ROOMS, index);
   };
   // Фильтрация по колличеству гостей
-  var onHouseGuests = function (annoucement, index) {
+  var compareHouseGuests = function (annoucement, index) {
     pinsHidder(annoucement.offer.guests.toString(), BitMask.GUESTS, index);
   };
   // Словарь функций для фильтрации
   var filtersMap = {
     'housing-type': function () {
-      bills.forEach(onHouseType);
+      bills.forEach(compareHouseType);
     },
     'housing-price': function () {
-      bills.forEach(onHousePrice);
+      bills.forEach(compareHousePrice);
     },
     'housing-rooms': function () {
-      bills.forEach(onHouseRooms);
+      bills.forEach(compareHouseRooms);
     },
     'housing-guests': function () {
-      bills.forEach(onHouseGuests);
+      bills.forEach(compareHouseGuests);
     }
   };
   // Функция фильтрует объявления по наличию дополнительных опций
@@ -89,8 +93,8 @@
       list.forEach(function (feature) {
         isVisible &= annoucement.offer.features.includes(feature);
       });
-      value = isVisible ? 'visible' : 'hidden';
-      pinsHidder('visible', BitMask.FEATURES, index);
+      value = isVisible ? PinState.VISIBLE : PinState.HIDDEN;
+      pinsHidder(PinState.VISIBLE, BitMask.FEATURES, index);
     });
     window.commonParts.fireEscKeydownEvent();
     idTimeout = null;

@@ -83,41 +83,39 @@
     return formAdForm.checkValidity();
   };
 
+  var formAdForm = document.querySelector('.ad-form');
+
   // ТЗ пункт 2.5 (синхронизация полей заезда и выезда)
-  var selectTimein = document.getElementById('timein');
-  var selectTimeout = document.getElementById('timeout');
+  var selectTimein = formAdForm.querySelector('#timein');
+  var selectTimeout = formAdForm.querySelector('#timeout');
   selectTimein.addEventListener('input', onTimeinSelectInput);
   selectTimeout.addEventListener('input', onTimeoutSelectInput);
 
   // ТЗ пункт 2.6 (синхронизация «Количество комнат» с полем «Количество мест»)
-  var selectRooms = document.getElementById('room_number');
-  var selectCapacity = document.getElementById('capacity');
+  var selectRooms = formAdForm.querySelector('#room_number');
+  var selectCapacity = formAdForm.querySelector('#capacity');
   var optionsCapacity = selectCapacity.querySelectorAll('option');
   var optionsFragment = document.createDocumentFragment();
   selectRooms.addEventListener('input', onRoomsNumberInput);
   onRoomsNumberInput();
 
   // ТЗ пункт 2.3 «Тип жилья» определяет минимальное значение поля «Цена за ночь»
-  var inputRentPrice = document.getElementById('price');
-  var selectBuildingType = document.getElementById('type');
+  var inputRentPrice = formAdForm.querySelector('#price');
+  var selectBuildingType = formAdForm.querySelector('#type');
   selectBuildingType.addEventListener('input', onTypeSelectInput);
   onTypeSelectInput();
 
   // ТЗ 1.4 Страница реагирует на неправильно введённые значения в форму
-  var inputTitle = document.getElementById('title');
+  var inputTitle = formAdForm.querySelector('#title');
   inputTitle.addEventListener('invalid', onInvalidFire);
   inputRentPrice.addEventListener('invalid', onInvalidFire);
 
-  var formAdForm = document.querySelector('.ad-form');
   var fieldsets = formAdForm.querySelectorAll('.ad-form fieldset');
-  var buttonReset = formAdForm.querySelector('.ad-form__reset');
-  var buttonSubmit = formAdForm.querySelector('.ad-form__submit');
   // Поле ввода адреса
-  var inputAddress = document.querySelector('#address');
+  var inputAddress = formAdForm.querySelector('#address');
 
   window.form = {
-    buttonSubmit: buttonSubmit,
-    buttonReset: buttonReset,
+    element: formAdForm,
     inputAddress: inputAddress,
     sendForm: sendForm,
     getFormValidity: getFormValidity,

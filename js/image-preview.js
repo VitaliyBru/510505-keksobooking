@@ -2,10 +2,10 @@
 
 (function () {
   var IMAGE_TYPES = ['png', 'jpeg', 'jpg', 'gif'];
-  var avatarLoader = document.getElementById('avatar');
+  var avatarLoader = document.querySelector('#avatar');
   var avatarViewer = document.querySelector('.ad-form-header__preview img');
   var DEFAULT_AVATAR = avatarViewer.src;
-  var photoLoader = document.getElementById('images');
+  var photoLoader = document.querySelector('#images');
   var photoContainer = document.querySelector('.ad-form__photo');
   var listForRemove = [];
 

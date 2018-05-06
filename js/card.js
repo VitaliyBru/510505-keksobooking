@@ -5,7 +5,7 @@
   var cardTemplate = document.querySelector('template').content
       .querySelector('.map__card');
   var mapContainer = document.querySelector('.map');
-  var mapFiltersContainer = document.querySelector('.map__filters-container');
+  var mapFiltersContainer = mapContainer.querySelector('.map__filters-container');
   var typeInRussian = {
     palace: 'дворец',
     flat: 'квартира',
@@ -54,13 +54,12 @@
     // Удобства в список li .popup__feature
     var listContainer = announcementCard.querySelector('.popup__features');
     listContainer.innerHTML = '';
-    for (var i = 0; i < announcement.offer.features.length; i++) {
+    announcement.offer.features.forEach(function (feature) {
       var listElement = document.createElement('li');
-      listElement.classList.add(
-          'popup__feature', 'popup__feature--' + announcement.offer.features[i]
-      );
+      listElement.classList.add('popup__feature',
+          'popup__feature--' + feature);
       listContainer.appendChild(listElement);
-    }
+    });
     // Описание в .popup__description
     var description = announcementCard.querySelector('.popup__description');
     description.textContent = announcement.offer.description;
@@ -68,12 +67,12 @@
     var imagesContainer = announcementCard.querySelector('.popup__photos');
     var imageTemplate = imagesContainer.querySelector('.popup__photo');
     imagesContainer.innerHTML = '';
-    // i без var по настоянию тревиса
-    for (i = 0; i < announcement.offer.photos.length; i++) {
+    announcement.offer.photos.forEach(function (source) {
       var image = imageTemplate.cloneNode();
-      image.src = announcement.offer.photos[i];
+      image.src = source;
       imagesContainer.appendChild(image);
-    }
+    });
+    // Добавляем слушатель на закритие карточки по клику на закрывающий элемент
     announcementCard.querySelector('.popup__close')
         .addEventListener('click', onPopupCloseButtonClick);
     return announcementCard;
