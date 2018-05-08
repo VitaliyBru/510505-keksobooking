@@ -11,7 +11,7 @@
       top: '375px'
     }
   };
-  var boundaryPinMove = {
+  var BoundaryPinMove = {
     minX: 0,
     minY: 150 - MAIN_PIN.dimansions.height,
     maxX: 1200 - MAIN_PIN.dimansions.width,
@@ -39,11 +39,11 @@
   // адрес в поле формы «адрес»
   var onMainPinMousemove = function (evt) {
     var positionX = parseInt(mainPin.style.left, 10) + evt.movementX;
-    positionX = getValueInRange(positionX, boundaryPinMove.minX,
-        boundaryPinMove.maxX);
+    positionX = getValueInRange(positionX, BoundaryPinMove.minX,
+        BoundaryPinMove.maxX);
     var positionY = parseInt(mainPin.style.top, 10) + evt.movementY;
-    positionY = getValueInRange(positionY, boundaryPinMove.minY,
-        boundaryPinMove.maxY);
+    positionY = getValueInRange(positionY, BoundaryPinMove.minY,
+        BoundaryPinMove.maxY);
     mainPin.style.left = positionX + 'px';
     mainPin.style.top = positionY + 'px';
     window.mainPin.setAddress();
@@ -52,24 +52,16 @@
   var onMainPinMousedown = function () {
     document.addEventListener('mousemove', onMainPinMousemove);
     document.addEventListener('mouseup', onMainPinMouseup);
-    window.pin.pinsContainer.addEventListener('mouseleave',
-        onPinsContainerMouseleave);
+    window.pin.container.addEventListener('mouseleave',
+        onMainPinMouseup);
   };
-  // Действия при отпускании клавиши мышки
+  // Действия при отпускании клавиши мышки и покидании курсором зоны контейнера
   // после нажания на элементе «map__pin--main»
   var onMainPinMouseup = function () {
     document.removeEventListener('mousemove', onMainPinMousemove);
     document.removeEventListener('mouseup', onMainPinMouseup);
-    window.pin.pinsContainer.removeEventListener('mouseleave',
-        onPinsContainerMouseleave);
-  };
-  // Действия при покидании курсора мышки зоны контейнера
-  // после нажания на элементе «map__pin--main»
-  var onPinsContainerMouseleave = function () {
-    document.removeEventListener('mousemove', onMainPinMousemove);
-    document.removeEventListener('mouseup', onMainPinMouseup);
-    window.pin.pinsContainer.removeEventListener('mouseleave',
-        onPinsContainerMouseleave);
+    window.pin.container.removeEventListener('mouseleave',
+        onMainPinMouseup);
   };
   // Функция записывает координаты острия пина пользователя в поле формы адресс
   var setAddress = function () {
@@ -84,7 +76,7 @@
   mainPin.addEventListener('mousedown', onMainPinMousedown);
 
   window.mainPin = {
-    pinEl: mainPin,
+    element: mainPin,
     setAddress: setAddress,
     resetPosition: resetPosition
   };

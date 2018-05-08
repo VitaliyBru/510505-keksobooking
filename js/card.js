@@ -5,7 +5,7 @@
       .querySelector('.map__card');
   var mapContainer = document.querySelector('.map');
   var mapFiltersContainer = mapContainer.querySelector('.map__filters-container');
-  var typeInRussian = {
+  var TypeInRussian = {
     palace: 'дворец',
     flat: 'квартира',
     house: 'дом',
@@ -41,7 +41,7 @@
     + '&#x20bd;<span>/ночь</span>';
     // Тип жилья in .popup__type
     announcementCard.querySelector('.popup__type')
-        .textContent = typeInRussian[announcement.offer.type];
+        .textContent = TypeInRussian[announcement.offer.type];
     // Кол-во комнат для кол-ва гостей .popup__text--capacity
     announcementCard.querySelector('.popup__text--capacity')
         .textContent = announcement.offer.rooms + ' комнат для '
@@ -91,7 +91,6 @@
   };
 
   window.card = {
-    showAnnouncementDitails: showAnnouncementDitails,
-    onPopupCloseButtonClick: onPopupCloseButtonClick
+    showAnnouncementDitails: showAnnouncementDitails
   };
 })();

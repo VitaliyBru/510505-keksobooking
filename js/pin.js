@@ -2,7 +2,7 @@
 
 (function () {
   var PIN_INDEX_LIMIT = 4;
-  var PIN_DIMENSIONS = {
+  var PinDimensions = {
     height: 70,
     width: 50
   };
@@ -10,7 +10,7 @@
       .querySelector('.map__pin');
   var fragment = document.createDocumentFragment();
   var pinsContainer = document.querySelector('.map__pins');
-  var pinElArray = [];
+  var pins = [];
   var bills = {};
 
   // Функция добавляет созданный элемент «pin» во фрагмент
@@ -26,11 +26,11 @@
     pinImgElement.alt = announcement.offer.title;
     // задаем координаты галочки
     pinElement.style.left =
-        (announcement.location.x - PIN_DIMENSIONS.width / 2) + 'px';
+        (announcement.location.x - PinDimensions.width / 2) + 'px';
     pinElement.style.top =
-        (announcement.location.y - PIN_DIMENSIONS.height) + 'px';
+        (announcement.location.y - PinDimensions.height) + 'px';
     fragment.appendChild(pinElement);
-    pinElArray.push(pinElement);
+    pins.push(pinElement);
   };
   // Функция возвращает пин или null если пин не найден
   var getPinElement = function (element) {
@@ -55,33 +55,33 @@
     bills.forEach(makePin);
     pinsContainer.appendChild(fragment);
     pinsContainer.addEventListener('click', onPinClick);
-    window.filters.engageFilters();
+    window.filters.engage();
   };
   var showSimilarPin = function () {
     window.backend.load(onSucceedDownload, window.errorMessage.onError);
   };
   // Функцмя удаляет пины похожих объявлений из разметки
-  var delitePins = function () {
-    pinElArray.forEach(function (child) {
+  var deletePins = function () {
+    pins.forEach(function (child) {
       pinsContainer.removeChild(child);
     });
     pinsContainer.removeEventListener('click', onPinClick);
-    pinElArray = [];
+    pins = [];
   };
   // Функция позволяет получить доступ к объекту за пределами модуля
   var getBills = function () {
     return bills;
   };
   // Функция возвращает массив пин-элементов
-  var getPinElArray = function () {
-    return pinElArray;
+  var getElements = function () {
+    return pins;
   };
 
   window.pin = {
-    pinsContainer: pinsContainer,
-    getPinElArray: getPinElArray,
+    container: pinsContainer,
+    getElements: getElements,
     getBills: getBills,
-    showSimilarPin: showSimilarPin,
-    delitePins: delitePins
+    showSimilar: showSimilarPin,
+    delete: deletePins
   };
 })();

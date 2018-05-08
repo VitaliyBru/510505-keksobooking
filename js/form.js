@@ -3,7 +3,7 @@
 (function () {
   var ONE_HUNDRED_ROOMS = 100;
   var ZERO_GUESTS = 0;
-  var minRentPriceMap = {
+  var MinRentPriceMap = {
     bungalo: 0,
     flat: 1000,
     house: 5000,
@@ -38,8 +38,8 @@
   };
   // Функция выставляет нижнюю границу цены аренды от типа строения
   var onTypeSelectInput = function () {
-    inputRentPrice.min = minRentPriceMap[selectBuildingType.value];
-    inputRentPrice.placeholder = minRentPriceMap[selectBuildingType.value];
+    inputRentPrice.min = MinRentPriceMap[selectBuildingType.value];
+    inputRentPrice.placeholder = MinRentPriceMap[selectBuildingType.value];
   };
   var onInvalidFire = function (evt) {
     evt.target.classList.add('validity');
@@ -117,9 +117,9 @@
   window.form = {
     element: formAdForm,
     inputAddress: inputAddress,
-    sendForm: sendForm,
-    getFormValidity: getFormValidity,
-    activateAdForm: activateAdForm,
-    setAdFormToInactive: setAdFormToInactive
+    submit: sendForm,
+    getValidity: getFormValidity,
+    activate: activateAdForm,
+    inactivate: setAdFormToInactive
   };
 })();

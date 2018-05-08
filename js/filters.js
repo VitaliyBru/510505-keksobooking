@@ -27,15 +27,15 @@
   };
   var pins = [];
   var bills = {};
-  var value = null;
+  var gauge = null;
   var visiblePins = null;
   var idTimeout = null;
   var form = document.querySelector('.map__filters');
   var featuresField = document.querySelector('#housing-features');
   // Функция скрывает или показывает пины обьявлений на основании
   // выставленных фильтров
-  var pinsHidder = function (testValue, bitMask, index) {
-    var isVisible = (testValue === value || value === FILTER_NOT_CHOSEN);
+  var aplayFilters = function (testValue, bitMask, index) {
+    var isVisible = (testValue === gauge || gauge === FILTER_NOT_CHOSEN);
     var mask = parseInt(pins[index].dataset.filtersMask, 10);
     mask = isVisible ? mask & (BITE - bitMask) : mask | bitMask;
     pins[index].dataset.filtersMask = mask;
@@ -48,7 +48,7 @@
   };
   // Фильтрация по типу жилья
   var compareHouseType = function (annoucement, index) {
-    pinsHidder(annoucement.offer.type, BitMask.TIPE, index);
+    aplayFilters(annoucement.offer.type, BitMask.TIPE, index);
   };
   // Фильтрация по цене за ночь
   var compareHousePrice = function (annoucement, index) {
@@ -58,18 +58,18 @@
     } else if (annoucement.offer.price <= PriceLimit.MIDDLE) {
       price = PriceCategory.MIDDLE;
     }
-    pinsHidder(price, BitMask.PRICE, index);
+    aplayFilters(price, BitMask.PRICE, index);
   };
   // Фильтрация по колличеству комнат
   var compareHouseRooms = function (annoucement, index) {
-    pinsHidder(annoucement.offer.rooms.toString(), BitMask.ROOMS, index);
+    aplayFilters(annoucement.offer.rooms.toString(), BitMask.ROOMS, index);
   };
   // Фильтрация по колличеству гостей
   var compareHouseGuests = function (annoucement, index) {
-    pinsHidder(annoucement.offer.guests.toString(), BitMask.GUESTS, index);
+    aplayFilters(annoucement.offer.guests.toString(), BitMask.GUESTS, index);
   };
   // Словарь функций для фильтрации
-  var filtersMap = {
+  var FiltersMap = {
     'housing-type': function () {
       bills.forEach(compareHouseType);
     },
@@ -93,18 +93,20 @@
       list.forEach(function (feature) {
         isVisible &= annoucement.offer.features.includes(feature);
       });
-      value = isVisible ? PinState.VISIBLE : PinState.HIDDEN;
-      pinsHidder(PinState.VISIBLE, BitMask.FEATURES, index);
+      gauge = isVisible ? PinState.VISIBLE : PinState.HIDDEN;
+      aplayFilters(PinState.VISIBLE, BitMask.FEATURES, index);
     });
     window.commonParts.fireEscKeydownEvent();
     idTimeout = null;
   };
   // Функция фильтрует объявления по данным из блоков «select»
   var onFilterChange = function (evt) {
-    value = evt.target.value;
-    visiblePins = VISIBLE_PINS_QUANTITY;
-    window.commonParts.fireEscKeydownEvent();
-    filtersMap[evt.target.name]();
+    if (evt.target.localName === 'select') {
+      gauge = evt.target.value;
+      visiblePins = VISIBLE_PINS_QUANTITY;
+      window.commonParts.fireEscKeydownEvent();
+      FiltersMap[evt.target.name]();
+    }
   };
   // Функция обрабатывает клики по дополнительным опциям
   var onFilterFeaturesClick = function (evt) {
@@ -116,14 +118,14 @@
     }
   };
   // Функция активирует алгоритм фильтрации
-  var engageFilters = function () {
-    pins = window.pin.getPinElArray();
+  var engage = function () {
+    pins = window.pin.getElements();
     bills = window.pin.getBills();
     form.addEventListener('input', onFilterChange);
     featuresField.addEventListener('click', onFilterFeaturesClick);
   };
   // Функция дезактивирует алгоритм фильтрации
-  var disengageFilters = function () {
+  var disengage = function () {
     form.reset();
     if (pins) {
       form.removeEventListener('input', onFilterChange);
@@ -132,7 +134,7 @@
   };
 
   window.filters = {
-    engageFilters: engageFilters,
-    disengageFilters: disengageFilters
+    engage: engage,
+    disengage: disengage
   };
 })();
