@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var MAIN_PIN = {
+  var MainPin = {
     dimansions: {
       height: 80,
       width: 64
@@ -13,8 +13,8 @@
   };
   var BoundaryPinMove = {
     minX: 0,
-    minY: 150 - MAIN_PIN.dimansions.height,
-    maxX: 1200 - MAIN_PIN.dimansions.width,
+    minY: 150 - MainPin.dimansions.height,
+    maxX: 1200 - MainPin.dimansions.width,
     maxY: 620
   };
   // Получаем пин польлзователя .map__pin--main
@@ -22,8 +22,8 @@
 
   // Возвращает координаты острия пина
   var getNailPinPosition = function (style) {
-    return (parseInt(style.left, 10) + MAIN_PIN.dimansions.width / 2) + ', '
-        + (parseInt(style.top, 10) + MAIN_PIN.dimansions.height);
+    return (parseInt(style.left, 10) + MainPin.dimansions.width / 2) + ', '
+        + (parseInt(style.top, 10) + MainPin.dimansions.height);
   };
   // Функция возвращает откорректированную величину в заданных рамках
   var getValueInRange = function (value, minValue, maxValue) {
@@ -69,8 +69,8 @@
   };
   // Функция сбрасывает пин пользователя на координаты по умолчанию
   var resetPosition = function () {
-    mainPin.style.left = MAIN_PIN.startPosition.left;
-    mainPin.style.top = MAIN_PIN.startPosition.top;
+    mainPin.style.left = MainPin.startPosition.left;
+    mainPin.style.top = MainPin.startPosition.top;
   };
   // Активируем возможноть перемещать пин пользователя по карте
   mainPin.addEventListener('mousedown', onMainPinMousedown);

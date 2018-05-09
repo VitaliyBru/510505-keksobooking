@@ -34,7 +34,7 @@
   var featuresField = document.querySelector('#housing-features');
   // Функция скрывает или показывает пины обьявлений на основании
   // выставленных фильтров
-  var aplayFilters = function (testValue, bitMask, index) {
+  var applyFilters = function (testValue, bitMask, index) {
     var isVisible = (testValue === gauge || gauge === FILTER_NOT_CHOSEN);
     var mask = parseInt(pins[index].dataset.filtersMask, 10);
     mask = isVisible ? mask & (BITE - bitMask) : mask | bitMask;
@@ -48,7 +48,7 @@
   };
   // Фильтрация по типу жилья
   var compareHouseType = function (annoucement, index) {
-    aplayFilters(annoucement.offer.type, BitMask.TIPE, index);
+    applyFilters(annoucement.offer.type, BitMask.TIPE, index);
   };
   // Фильтрация по цене за ночь
   var compareHousePrice = function (annoucement, index) {
@@ -58,15 +58,15 @@
     } else if (annoucement.offer.price <= PriceLimit.MIDDLE) {
       price = PriceCategory.MIDDLE;
     }
-    aplayFilters(price, BitMask.PRICE, index);
+    applyFilters(price, BitMask.PRICE, index);
   };
   // Фильтрация по колличеству комнат
   var compareHouseRooms = function (annoucement, index) {
-    aplayFilters(annoucement.offer.rooms.toString(), BitMask.ROOMS, index);
+    applyFilters(annoucement.offer.rooms.toString(), BitMask.ROOMS, index);
   };
   // Фильтрация по колличеству гостей
   var compareHouseGuests = function (annoucement, index) {
-    aplayFilters(annoucement.offer.guests.toString(), BitMask.GUESTS, index);
+    applyFilters(annoucement.offer.guests.toString(), BitMask.GUESTS, index);
   };
   // Словарь функций для фильтрации
   var FiltersMap = {
@@ -94,7 +94,7 @@
         isVisible &= annoucement.offer.features.includes(feature);
       });
       gauge = isVisible ? PinState.VISIBLE : PinState.HIDDEN;
-      aplayFilters(PinState.VISIBLE, BitMask.FEATURES, index);
+      applyFilters(PinState.VISIBLE, BitMask.FEATURES, index);
     });
     window.commonParts.fireEscKeydownEvent();
     idTimeout = null;
